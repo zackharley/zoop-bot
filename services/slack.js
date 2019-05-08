@@ -22,13 +22,11 @@ module.exports = new Proxy(CONFIGS, {
         ...(method !== 'GET' && { 'Content-Type': 'application/json' }),
         Authorization: `Bearer ${SLACK_BOT_TOKEN}`,
       };
-      console.log({ headers });
       const options = {
         ...(method !== 'GET' && { body: JSON.stringify(body) }),
         headers,
         method,
       };
-      console.log({ url });
       return fetch(url, options);
     };
   },

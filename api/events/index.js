@@ -20,9 +20,7 @@ app.post('*', async (req, res) => {
       channel: payload.event.channel,
       text: zoop,
     };
-    console.log(JSON.stringify({ body }, null, 2));
-    const response = await slack.postMessage({ body });
-    console.log(JSON.stringify(await response.json(), null, 2));
+    await slack.postMessage({ body });
     res.status(200).send();
     return;
   }
