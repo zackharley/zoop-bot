@@ -3,7 +3,7 @@
 const bodyParser = require('body-parser');
 const express = require('express');
 const morgan = require('morgan');
-const slack = require('../../services/slack');
+const { zoop } = require('./actions');
 
 const app = express();
 
@@ -11,20 +11,18 @@ app.use(bodyParser.json());
 app.use(morgan('tiny'));
 
 app.post('*', async (req, res) => {
+  console.log({headers: req.headers });
   const payload = req.body;
-  const match = payload.event.text.match(/^a(h+)$/);
-  if (!!match) {
-    const numberOfHs = match[0].length;
-    const zoop = ['zo', ...new Array(numberOfHs).fill('o'), 'p'].join('');
-    const body = {
-      channel: payload.event.channel,
-      text: zoop,
-    };
-    await slack.postMessage({ body });
-    res.status(200).send();
-    return;
+  const eventType = payload.event.type;
+  switch (eventType) {
+    case 'message':
+      await zoop(payload);
+      break;
+    default:
+      console.log(`No handlers for event type: ${eventType}`);
+      break;
   }
-  res.status(201).send();
+  res.status(200).end();
 });
 
 module.exports = app;
